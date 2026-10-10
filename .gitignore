@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+
+# Variables locales y credenciales: NUNCA se suben
+.env
+.env.local
+.env.*.local
+service-account.json
+
+# Firebase
+.firebase
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
