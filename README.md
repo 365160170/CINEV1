@@ -4,6 +4,13 @@ Videoteca privada para dos personas: se recomiendan películas, eligen qué ver 
 
 React + Vite + TypeScript · Firebase Auth + Firestore · TMDB · GitHub Pages.
 
+**En línea:** https://365160170.github.io/CINEV1/
+
+El despliegue es automático: cada push a `main` ejecuta `.github/workflows/deploy.yml`,
+que compila y publica en GitHub Pages. El `BASE_PATH` se toma del nombre del repo, así
+que no hay que tocarlo. Las claves se leen de las *Variables* del repositorio
+(Settings → Secrets and variables → Actions), nunca del código.
+
 ---
 
 ## 0. Probarla ya (modo demostración)
