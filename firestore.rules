@@ -1,0 +1,95 @@
+rules_version = '2';
+// CINE DE DOS — reglas de seguridad. Deny by default.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function spaceData(s) { return get(/databases/$(database)/documents/spaces/$(s)).data; }
+    function isMember(s) { return signedIn() && request.auth.uid in spaceData(s).memberUids; }
+    function isDay(v) { return v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'); }
+    function optStr(v, max) { return v == null || (v is string && v.size() <= max); }
+    function optInt(v, lo, hi) { return v == null || (v is int && v >= lo && v <= hi); }
+
+    match /spaces/{spaceId} {
+      allow read: if isMember(spaceId);
+      // Solo se puede cambiar el nombre. memberUids / createdByUid nunca desde el cliente.
+      allow update: if isMember(spaceId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 40;
+      allow create, delete: if false; // se provisiona con Admin SDK
+
+      // Perfil público mínimo (sin email). Cada quien edita solo el suyo.
+      match /members/{uid} {
+        allow read: if isMember(spaceId);
+        allow create, update: if isMember(spaceId) && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['displayName', 'avatarPreset', 'accentColor', 'updatedAt'])
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.size() > 0 && request.resource.data.displayName.size() <= 30
+          && request.resource.data.avatarPreset in ['round', 'ticket', 'frame']
+          && request.resource.data.accentColor is string && request.resource.data.accentColor.matches('^#[0-9A-Fa-f]{6}$')
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if false;
+      }
+
+      match /movies/{movieId} {
+        allow read: if isMember(spaceId);
+
+        allow create: if isMember(spaceId)
+          && request.resource.data.keys().hasOnly(['tmdbId','title','originalTitle','releaseYear','posterPath','backdropPath','overview','runtimeMinutes','source','status','addedByUid','addedAt','watchedDate','watchedByUid','updatedAt'])
+          && request.resource.data.addedByUid == request.auth.uid
+          && request.resource.data.status == 'pending'
+          && request.resource.data.watchedDate == null && request.resource.data.watchedByUid == null
+          && request.resource.data.addedAt == request.time && request.resource.data.updatedAt == request.time
+          && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 200
+          && optStr(request.resource.data.originalTitle, 200)
+          && optStr(request.resource.data.posterPath, 100) && optStr(request.resource.data.backdropPath, 100)
+          && optStr(request.resource.data.overview, 1500)
+          && optInt(request.resource.data.releaseYear, 1888, 2100)
+          && optInt(request.resource.data.runtimeMinutes, 1, 1500)
+          && (
+            (request.resource.data.source == 'tmdb' && request.resource.data.tmdbId is int
+              && movieId == 'tmdb_' + string(request.resource.data.tmdbId))
+            || (request.resource.data.source == 'manual' && request.resource.data.tmdbId == null
+              && movieId.matches('^manual_[0-9a-f-]{36}$'))
+          );
+
+        // Cambios de estado/fecha por cualquiera de los dos; título/año solo si es manual.
+        allow update: if isMember(spaceId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['status','watchedDate','watchedByUid','updatedAt','title','releaseYear'])
+          && request.resource.data.updatedAt == request.time
+          && (
+            (request.resource.data.status == 'watched' && isDay(request.resource.data.watchedDate)
+              && request.resource.data.watchedByUid == request.auth.uid)
+            || (request.resource.data.status == 'pending' && request.resource.data.watchedDate == null
+              && request.resource.data.watchedByUid == null)
+            || (request.resource.data.status == resource.data.status
+              && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['watchedDate','watchedByUid']))
+          )
+          && (resource.data.source == 'manual'
+              || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['title','releaseYear']))
+          && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 200
+          && optInt(request.resource.data.releaseYear, 1888, 2100);
+
+        allow delete: if isMember(spaceId);
+      }
+
+      // Calificaciones: id = <movieId>_<uid>. Solo su dueño crea/edita/borra.
+      match /ratings/{ratingId} {
+        allow read: if isMember(spaceId);
+        allow create, update: if isMember(spaceId)
+          && request.resource.data.keys().hasOnly(['movieId','userUid','score','updatedAt'])
+          && request.resource.data.userUid == request.auth.uid
+          && ratingId == request.resource.data.movieId + '_' + request.auth.uid
+          && (resource == null || resource.data.userUid == request.auth.uid)
+          && request.resource.data.score is int
+          && request.resource.data.score >= 1 && request.resource.data.score <= 10
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if isMember(spaceId) && resource.data.userUid == request.auth.uid;
+      }
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
