@@ -82,6 +82,10 @@ Llena los valores y corre `npm run dev`. Ya no verás el aviso de modo demostrac
 
 > La `apiKey` de Firebase no es un secreto: identifica el proyecto. La seguridad real la dan Authentication y `firestore.rules`.
 
+> Las variables se leen **en tiempo de compilación**. Si cambias una, no basta con guardarla:
+> hay que volver a ejecutar el workflow (Actions → Deploy to GitHub Pages → *Run workflow*)
+> o hacer un push a `main`, porque el sitio ya publicado conserva los valores anteriores.
+
 ## 7. Probar desde dos celulares
 
 1. Abre el enlace en ambos teléfonos y entra cada quien con su correo.
