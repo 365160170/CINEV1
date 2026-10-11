@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import type { Member, Movie } from '../data';
 import { img } from '../data/tmdb';
 import { hashHue, initials } from '../util';
-
-const GROUNDS = ['#2a2224', '#1f2a2a', '#2b2619', '#22222f', '#2a1d1b', '#1d2620'];
 
 export function Poster({ movie, size = 'w342', className = '' }: { movie: Pick<Movie, 'title' | 'posterPath' | 'releaseYear'>; size?: 'w185' | 'w342' | 'w500'; className?: string }) {
   const [broken, setBroken] = useState(false);
@@ -12,9 +10,11 @@ export function Poster({ movie, size = 'w342', className = '' }: { movie: Pick<M
   if (src && !broken) {
     return <div className={`poster ${className}`}><img src={src} alt={`Póster de ${movie.title}`} loading="lazy" decoding="async" onError={() => setBroken(true)} /></div>;
   }
-  const bg = GROUNDS[hashHue(movie.title) % GROUNDS.length];
+  // Sin imagen le imprimimos un póster con un color propio y estable: el
+  // mismo título siempre da el mismo color, y la parrilla se ve variada.
+  const phue = hashHue(movie.title) % 360;
   return (
-    <div className={`poster poster-type ${className}`} style={{ background: bg }} role="img" aria-label={`Sin póster: ${movie.title}`}>
+    <div className={`poster poster-type ${className}`} style={{ '--phue': phue } as CSSProperties} role="img" aria-label={`Sin póster: ${movie.title}`}>
       <span className="pt-rule" />
       <span className="pt-title">{movie.title}</span>
       {movie.releaseYear && <span className="pt-year">{movie.releaseYear}</span>}

@@ -4,6 +4,7 @@ import { repo } from '../data';
 import { img, movieTrailer } from '../data/tmdb';
 import { go, useApp } from '../store';
 import { Avatar, Poster, ScorePicker, Sheet } from '../ui/components';
+import { useAmbient } from '../ui/ambient';
 import { formatDay, formatMs, todayISO } from '../util';
 
 export function Detail({ id }: { id: string }) {
@@ -13,6 +14,7 @@ export function Detail({ id }: { id: string }) {
   const [trailer, setTrailer] = useState<string | null>(null);
 
   useEffect(() => { if (movie?.tmdbId) movieTrailer(movie.tmdbId).then(setTrailer); }, [movie?.tmdbId]);
+  useAmbient(movie?.title, img(movie?.posterPath ?? null, 'w185'));
 
   if (!movie) {
     return (

@@ -39,6 +39,7 @@ function AppBody() {
 
   return (
     <div className="shell">
+      <div className="ambient" aria-hidden />
       <DemoBanner />
       {!online && <div className="offline" role="status">Sin conexión. Puedes ver la cartelera, pero no guardar cambios.</div>}
       <nav className="nav" aria-label="Principal">

@@ -71,7 +71,8 @@ export function Denied({ kind }: { kind: 'denied' | 'error' }) {
   );
 }
 
-export const COLORS = ['#E07A5F', '#E8BA6A', '#C4789B', '#7FA88B', '#7E9CC9', '#D0D0C8'];
+// Colores de la casa: vivos, claros y con la inicial oscura encima.
+export const COLORS = ['#FF6F91', '#FFC56E', '#5CE1C6', '#A78BFA', '#7FC8F8', '#FF9F6E'];
 export const PRESETS = [{ id: 'round', label: 'Círculo' }, { id: 'ticket', label: 'Boleto' }, { id: 'frame', label: 'Cuadro' }];
 
 export function ProfileForm({ onDone, first }: { onDone?: () => void; first?: boolean }) {

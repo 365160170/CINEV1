@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react';
 import { go, useApp } from '../store';
 import { Avatar, Poster, RatingPair } from '../ui/components';
 import { img } from '../data/tmdb';
+import { useAmbient } from '../ui/ambient';
 import { formatDay } from '../util';
 
 export function Home() {
@@ -13,6 +14,8 @@ export function Home() {
   const hero = pending.length ? pending[day % pending.length] : null;
   const last = watched[0];
   const latestByOther = pending.find((m) => m.addedByUid === other?.uid && Date.now() - m.addedAt < 3 * 86400000);
+
+  useAmbient(hero?.title, img(hero?.posterPath ?? null, 'w185'));
 
   return (
     <div className="page">
@@ -69,13 +72,24 @@ export function Home() {
         <section>
           <div className="sec-head"><h2 className="serif">Última función</h2></div>
           <button className="ticket" onClick={() => go(`/peli/${last.id}`)}>
-            <Poster movie={last} size="w185" className="ticket-poster" />
-            <div className="ticket-body">
-              <span className="ticket-no">Función nº {watched.length}</span>
-              <strong className="ticket-title">{last.title}</strong>
-              <span className="muted small">{formatDay(last.watchedDate, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-              <RatingPair scores={ratingsFor(last.id)} members={members} uids={space?.memberUids ?? []} />
-            </div>
+            <span className="ticket-main">
+              <span className="ticket-head">
+                <span className="ticket-brand">{space?.name ?? 'Cine de Dos'}</span>
+                <span className="ticket-serial">N.º {String(watched.length).padStart(3, '0')}</span>
+              </span>
+              <span className="ticket-body">
+                <strong className="ticket-title">{last.title}</strong>
+                <span className="ticket-meta">
+                  {[last.releaseYear, last.runtimeMinutes && `${last.runtimeMinutes} min`].filter(Boolean).join(' · ') || 'Función registrada'}
+                </span>
+                <RatingPair scores={ratingsFor(last.id)} members={members} uids={space?.memberUids ?? []} />
+              </span>
+            </span>
+            <span className="ticket-stub">
+              <span className="stub-label">Admite</span>
+              <span className="stub-big">2</span>
+              <span className="stub-date">{formatDay(last.watchedDate, { day: '2-digit', month: 'short' })}</span>
+            </span>
           </button>
         </section>
       )}
