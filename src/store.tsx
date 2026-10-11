@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { repo, type AuthUser, type Member, type Movie, type Rating, type Space } from './data';
 
 type Load = 'loading' | 'ready' | 'denied' | 'error';
@@ -70,9 +71,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return <C.Provider value={value}>{children}</C.Provider>;
 }
 
+// NAVEGACIÓN CON TRANSICIÓN
+// El cambio de pantalla era un salto seco, que es buena parte de la
+// sensación de plano. Con la API de transiciones del navegador el DOM se
+// actualiza dentro de la transición para que capture el antes y el después;
+// donde no existe, o si la persona pidió menos movimiento, se navega igual
+// de siempre y no se pierde nada.
+let aplicarRuta: ((path: string) => void) | null = null;
+
 export function useRoute() {
   const [hash, setHash] = useState(location.hash || '#/');
-  useEffect(() => { const f = () => { setHash(location.hash || '#/'); window.scrollTo(0, 0); }; addEventListener('hashchange', f); return () => removeEventListener('hashchange', f); }, []);
+  useEffect(() => {
+    aplicarRuta = (p) => setHash('#' + p);
+    const f = () => { setHash(location.hash || '#/'); window.scrollTo(0, 0); };
+    addEventListener('hashchange', f);
+    return () => { removeEventListener('hashchange', f); aplicarRuta = null; };
+  }, []);
   return hash.replace(/^#/, '') || '/';
 }
-export const go = (path: string) => { location.hash = path; };
+
+type ConTransicion = Document & { startViewTransition?: (cb: () => void) => unknown };
+
+export const go = (path: string) => {
+  const saltar = () => { location.hash = path; };
+  const doc = document as ConTransicion;
+  const menos = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (menos || typeof doc.startViewTransition !== 'function' || !aplicarRuta) { saltar(); return; }
+  doc.startViewTransition(() => {
+    flushSync(() => aplicarRuta!(path));
+    saltar();
+    window.scrollTo(0, 0);
+  });
+};
+
+/** Abre una película haciendo crecer su propio póster hasta la ficha. */
+export function abrirPeli(e: { currentTarget: EventTarget | null }, path: string) {
+  const raiz = e.currentTarget as HTMLElement | null;
+  // En la parrilla el póster va dentro del botón; en el destacado el botón
+  // «Ver ficha» es su hermano, así que hay que subir al panel.
+  const cartel = raiz?.querySelector<HTMLElement>('.poster')
+    ?? raiz?.closest('.hero')?.querySelector<HTMLElement>('.poster')
+    ?? null;
+  if (cartel) {
+    cartel.style.viewTransitionName = 'cartel';
+    // El nombre debe ser único en el documento: se suelta en cuanto la
+    // transición termina, o la siguiente navegación se cancelaría.
+    setTimeout(() => { cartel.style.viewTransitionName = ''; }, 700);
+  }
+  go(path);
+}

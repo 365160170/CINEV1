@@ -7,12 +7,16 @@ import { hashHue, initials } from '../util';
 export function Poster({ movie, size = 'w342', className = '' }: { movie: Pick<Movie, 'title' | 'posterPath' | 'releaseYear'>; size?: 'w185' | 'w342' | 'w500'; className?: string }) {
   const [broken, setBroken] = useState(false);
   const src = img(movie.posterPath, size);
-  if (src && !broken) {
-    return <div className={`poster ${className}`}><img src={src} alt={`Póster de ${movie.title}`} loading="lazy" decoding="async" onError={() => setBroken(true)} /></div>;
-  }
-  // Sin imagen le imprimimos un póster con un color propio y estable: el
-  // mismo título siempre da el mismo color, y la parrilla se ve variada.
+  // El mismo título siempre da el mismo tono. Con imagen tiñe la sombra que
+  // proyecta; sin imagen, además pinta el propio póster.
   const phue = hashHue(movie.title) % 360;
+  if (src && !broken) {
+    return (
+      <div className={`poster ${className}`} style={{ '--phue': phue } as CSSProperties}>
+        <img src={src} alt={`Póster de ${movie.title}`} loading="lazy" decoding="async" onError={() => setBroken(true)} />
+      </div>
+    );
+  }
   return (
     <div className={`poster poster-type ${className}`} style={{ '--phue': phue } as CSSProperties} role="img" aria-label={`Sin póster: ${movie.title}`}>
       <span className="pt-rule" />

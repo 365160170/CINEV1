@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { go, useApp } from '../store';
+import { abrirPeli, go, useApp } from '../store';
 import { Avatar, Poster, RatingPair } from '../ui/components';
 import { img } from '../data/tmdb';
 import { useEffect, useState } from 'react';
@@ -44,7 +44,7 @@ export function Home() {
             <div className="hero-text">
               <h1 className="hero-title">{hero.title}{hero.releaseYear ? <span className="muted"> ({hero.releaseYear})</span> : null}</h1>
               <p className="muted small">La propuso {members[hero.addedByUid]?.displayName ?? '—'}</p>
-              <button className="btn primary" onClick={() => go(`/peli/${hero.id}`)}>Ver ficha</button>
+              <button className="btn primary" onClick={(e) => abrirPeli(e, `/peli/${hero.id}`)}>Ver ficha</button>
             </div>
           </div>
         </section>
@@ -67,7 +67,7 @@ export function Home() {
           <div className="sec-head"><h2 className="serif">En nuestra cartelera</h2><button className="link" onClick={() => go('/lista')}>Ver todas</button></div>
           <div className="lane">
             {pending.slice(0, 10).map((m) => (
-              <button key={m.id} className="lane-item" onClick={() => go(`/peli/${m.id}`)}>
+              <button key={m.id} className="lane-item" onClick={(e) => abrirPeli(e, `/peli/${m.id}`)}>
                 <Poster movie={m} size="w185" />
                 <span className="lane-title">{m.title}</span>
               </button>

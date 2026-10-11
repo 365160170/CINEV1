@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { go, useApp } from '../store';
+import { abrirPeli, go, useApp } from '../store';
 import { Poster, SkeletonGrid } from '../ui/components';
 import { formatDay } from '../util';
 
@@ -51,7 +51,7 @@ export function List() {
           {list.map((m) => {
             const sc = ratingsFor(m.id);
             return (
-              <button key={m.id} className="card" onClick={() => go(`/peli/${m.id}`)}>
+              <button key={m.id} className="card" onClick={(e) => abrirPeli(e, `/peli/${m.id}`)}>
                 <Poster movie={m} />
                 <span className="card-title">{m.title}</span>
                 <span className="card-meta">

@@ -194,7 +194,7 @@ input[type=date] { color-scheme: dark; }
 .avatar-btn:active { transform: scale(0.9); }
 
 /* Póster */
-.poster { aspect-ratio: 2 / 3; width: 100%; border-radius: var(--r-sm); overflow: hidden; background: var(--panel); position: relative; container-type: inline-size; box-shadow: 0 8px 24px rgba(0,0,0,0.45); transition: transform var(--t) var(--ease); }
+.poster { aspect-ratio: 2 / 3; width: 100%; border-radius: var(--r-sm); overflow: hidden; background: var(--panel); position: relative; container-type: inline-size; box-shadow: 0 14px 30px -12px hsl(var(--phue, 318) 85% 48% / 0.45), 0 6px 18px rgba(0,0,0,0.5); transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease); }
 .poster img { width: 100%; height: 100%; object-fit: cover; }
 /* Sin póster, le imprimimos uno con el color de la propia película */
 .poster-type { display: flex; flex-direction: column; justify-content: flex-end; padding: 11% 10%; gap: 6px; border: 0;
@@ -211,12 +211,15 @@ input[type=date] { color-scheme: dark; }
 
 .hero { position: relative; border-radius: var(--r); overflow: hidden; background: var(--panel); border: 1px solid var(--borde); box-shadow: 0 18px 50px rgba(0,0,0,0.42); }
 .hero.skel { height: 300px; }
-.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.46; }
-.hero-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,10,18,0.96) 6%, rgba(13,10,18,0.62) 52%, rgba(13,10,18,0.22)); }
+.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.96; }
+/* El velo protege solo la franja donde cae el texto; arriba la imagen
+   queda libre. Medido: el texto conserva mas de 4.5:1 sobre el. */
+.hero-shade { position: absolute; inset: 0; background:
+  linear-gradient(to top, rgba(13,10,18,0.97) 0%, rgba(13,10,18,0.93) 26%, rgba(13,10,18,0.58) 54%, rgba(13,10,18,0.14) 80%, rgba(13,10,18,0) 100%); }
 .hero-body { position: relative; display: flex; gap: 20px; align-items: flex-end; padding: 22px 20px; }
 @media (max-width: 379px) { .hero-poster { width: 84px; } .hero-body { gap: 14px; padding: 18px 15px; } .hero-text .btn { padding: 0 18px; } }
 .hero:has(.hero-bg) .hero-body { min-height: 300px; }
-.hero-poster { width: 116px; flex-shrink: 0; }
+.hero-poster { width: 116px; flex-shrink: 0; box-shadow: 0 22px 44px -14px hsl(var(--phue, 318) 88% 52% / 0.6), 0 10px 26px rgba(0,0,0,0.6); }
 .hero-text { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
 .hero-title { margin: 0; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.45rem, 6.6vw, 2.1rem); line-height: 1.08; letter-spacing: -0.03em; overflow-wrap: break-word; text-wrap: balance; }
 .hero-title .muted { font-family: var(--sans); font-weight: 400; font-size: 0.9rem; }
@@ -279,6 +282,26 @@ input[type=date] { color-scheme: dark; }
 
 .fab { display: flex; align-items: center; gap: 10px; margin: 34px auto 10px; padding: 0 24px; min-height: 50px; border: 1px solid var(--borde-2); border-radius: 999px; background: var(--panel); font-weight: 600; font-size: 0.94rem; color: var(--ink); transition: background var(--t), transform var(--t) var(--bounce); }
 .fab:active { transform: scale(0.96); }
+
+/* ===== Transicion entre pantallas =====
+   Sale mas rapido de lo que entra, que es como se lee una sustitucion y no
+   un parpadeo. El poster tocado crece hasta ser la portada de la ficha. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) { animation: vt-sale 170ms cubic-bezier(.4,0,1,1) both; }
+  ::view-transition-new(root) { animation: vt-entra 320ms cubic-bezier(.16,1,.3,1) both; }
+  ::view-transition-old(cartel), ::view-transition-new(cartel) { animation-duration: 380ms; animation-timing-function: cubic-bezier(.16,1,.3,1); }
+}
+@keyframes vt-sale { to { opacity: 0; transform: scale(0.985); } }
+@keyframes vt-entra { from { opacity: 0; transform: scale(1.012); } }
+
+/* El fondo del destacado se desplaza mas lento que el contenido. Va por
+   linea de tiempo de scroll del navegador: sin JavaScript y sin trabar. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-bg { animation: paralaje linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+    @keyframes paralaje { from { transform: translateY(-7%) scale(1.16); } to { transform: translateY(7%) scale(1.16); } }
+  }
+}
 
 /* ===== La marquesina =====
    El historial de la casa como cartelera de sala, no como tablero de
@@ -360,12 +383,12 @@ input[type=date] { color-scheme: dark; }
 
 /* Ficha */
 .backdrop { position: relative; height: 44vh; max-height: 420px; min-height: 210px; overflow: hidden; }
-.backdrop img { width: 100%; height: 100%; object-fit: cover; }
-.backdrop-shade { position: absolute; inset: 0; background: linear-gradient(to top, var(--noche) 2%, rgba(13,10,18,0.5) 56%, rgba(13,10,18,0.3)); }
+.backdrop img { width: 100%; height: 100%; object-fit: cover; opacity: 0.96; }
+.backdrop-shade { position: absolute; inset: 0; background: linear-gradient(to top, var(--noche) 1%, rgba(13,10,18,0.86) 24%, rgba(13,10,18,0.34) 62%, rgba(13,10,18,0.08) 100%); }
 .detail-bar { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; }
 .detail-body { margin-top: -112px; position: relative; max-width: 760px; }
 .detail-head { display: flex; gap: 18px; align-items: flex-end; }
-.detail-poster { width: 118px; flex-shrink: 0; }
+.detail-poster { width: 118px; flex-shrink: 0; box-shadow: 0 24px 48px -16px hsl(var(--phue, 318) 88% 52% / 0.6), 0 10px 26px rgba(0,0,0,0.6); view-transition-name: cartel; }
 @media (min-width: 700px) { .detail-poster { width: 176px; } }
 .detail-title { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.9rem, 8vw, 2.4rem); line-height: 1.04; margin: 0 0 6px; letter-spacing: -0.035em; }
 .detail-head .muted { font-size: 0.9rem; }
