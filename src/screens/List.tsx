@@ -43,7 +43,7 @@ export function List() {
       {load === 'loading' ? <SkeletonGrid /> : list.length === 0 ? (
         <div className="empty">
           <p className="serif empty-t">{tab === 'pending' ? 'Nada pendiente por aquí' : 'Aún no registran funciones'}</p>
-          <p className="muted">{tab === 'pending' ? 'Busca una película y agrégala a su lista.' : 'Cuando vean una película, ábranla y toquen «Marcar como vista».'}</p>
+          <p className="muted">{tab === 'pending' ? 'Busca una película y agrégala a la cartelera.' : 'Cuando vean una película, ábranla y toquen «Marcar como vista».'}</p>
           {tab === 'pending' && <button className="btn primary" onClick={() => go('/buscar')}>Buscar película</button>}
         </div>
       ) : (

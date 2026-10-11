@@ -28,9 +28,9 @@ function AppBody() {
   const route = useRoute();
 
   if (!authReady) return <div className="splash"><span className="wordmark">Cine de Dos</span></div>;
-  if (!user) return <><DemoBanner /><Login /></>;
+  if (!user) return <><header className="bars"><DemoBanner /></header><Login /></>;
   if (load === 'denied' || load === 'error') return <Denied kind={load} />;
-  if (load === 'ready' && !me) return <><DemoBanner /><Onboarding /></>;
+  if (load === 'ready' && !me) return <><header className="bars"><DemoBanner /></header><Onboarding /></>;
 
   const detail = route.match(/^\/peli\/(.+)$/);
   const screen = detail ? <Detail id={decodeURIComponent(detail[1])} /> :
@@ -40,8 +40,10 @@ function AppBody() {
   return (
     <div className="shell">
       <div className="ambient" aria-hidden />
-      <DemoBanner />
-      {!online && <div className="offline" role="status">Sin conexión. Puedes ver la cartelera, pero no guardar cambios.</div>}
+      <header className="bars">
+        <DemoBanner />
+        {!online && <p className="offline" role="status">Sin conexión. Pueden ver la cartelera, pero no guardar cambios.</p>}
+      </header>
       <nav className="nav" aria-label="Principal">
         <span className="wordmark sm nav-brand">{space?.name ?? 'Cine de Dos'}</span>
         {NAV.map(({ path, label, Icon }) => (
@@ -58,5 +60,5 @@ function AppBody() {
 
 function DemoBanner() {
   if (repo.mode !== 'demo') return null;
-  return <div className="demo-banner">Modo demostración. Los datos viven solo en este navegador.</div>;
+  return <p className="demo-banner">Modo demostración. Los datos viven solo en este navegador.</p>;
 }

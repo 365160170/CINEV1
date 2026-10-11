@@ -61,7 +61,7 @@ export function Denied({ kind }: { kind: 'denied' | 'error' }) {
     <main className="access">
       <div className="access-card">
         <h1 className="serif big">{kind === 'denied' ? 'Esta sala es privada' : 'Se cortó la proyección'}</h1>
-        <p className="muted">{kind === 'denied' ? 'Tu cuenta no está autorizada para este cine. Si crees que es un error, pide a quien lo administra que agregue tu cuenta.' : 'No pudimos cargar la cartelera. Revisa tu conexión.'}</p>
+        <p className="muted">{kind === 'denied' ? 'Esta cuenta no tiene entrada para este cine. Si debería tenerla, pídele a la otra persona que la agregue.' : 'No pudimos cargar la cartelera. Revisa tu conexión.'}</p>
         <div className="row">
           {kind === 'error' && <button className="btn primary" onClick={retry}>Reintentar</button>}
           <button className="btn ghost" onClick={() => repo.signOut()}>Cerrar sesión</button>

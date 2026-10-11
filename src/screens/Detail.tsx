@@ -19,7 +19,7 @@ export function Detail({ id }: { id: string }) {
   if (!movie) {
     return (
       <div className="page"><div className="empty">
-        <p className="serif empty-t">{load === 'loading' ? 'Cargando…' : 'Esta película ya no está en su lista'}</p>
+        <p className="serif empty-t">{load === 'loading' ? 'Cargando…' : 'Esta película ya no está en la cartelera'}</p>
         {load !== 'loading' && <button className="btn ghost" onClick={() => go('/lista')}>Volver a la lista</button>}
       </div></div>
     );
@@ -28,7 +28,7 @@ export function Detail({ id }: { id: string }) {
   const uids = space?.memberUids ?? [];
   const backdrop = img(movie.backdropPath, 'w1280');
   const guard = async (fn: () => Promise<void>, ok: string) => {
-    if (!online) { toast('Necesitas conexión para guardar.'); return; }
+    if (!online) { toast('Sin conexión no se puede guardar.'); return; }
     try { await fn(); toast(ok); setSheet(null); } catch { toast('No se guardó. Inténtalo otra vez.'); }
   };
 
@@ -81,11 +81,11 @@ export function Detail({ id }: { id: string }) {
       }, 'Una más para nuestra historia')} />
 
       <Sheet open={sheet === 'date'} onClose={() => setSheet(null)} title="¿Cuándo la vieron?">
-        <DateForm initial={movie.watchedDate ?? todayISO()} onSave={(d) => guard(() => repo.setWatchedDate(movie.id, d, user!.uid), 'Fecha corregida')} />
+        <DateForm initial={movie.watchedDate ?? todayISO()} onSave={(d) => guard(() => repo.setWatchedDate(movie.id, d, user!.uid), 'Listo, ya quedó la fecha')} />
       </Sheet>
 
       <Sheet open={sheet === 'rate'} onClose={() => setSheet(null)} title="¿Qué nota le das?">
-        <RateForm initial={scores[user!.uid] ?? null} onSave={(s) => guard(() => repo.setRating(movie.id, user!.uid, s), s ? 'Nota guardada' : 'Nota quitada')} />
+        <RateForm initial={scores[user!.uid] ?? null} onSave={(s) => guard(() => repo.setRating(movie.id, user!.uid, s), s ? 'Quedó tu nota' : 'Quitaste tu nota')} />
       </Sheet>
 
       <Sheet open={sheet === 'rename'} onClose={() => setSheet(null)} title="Editar película">
@@ -96,7 +96,7 @@ export function Detail({ id }: { id: string }) {
         <div className="menu">
           {movie.source === 'manual' && <button onClick={() => setSheet('rename')}>Editar nombre y año</button>}
           {movie.status === 'watched' && <button onClick={() => { if (confirm('¿Devolver a pendientes? Se borrará la fecha de la función; las notas se conservan.')) guard(() => repo.revertPending(movie.id), 'De vuelta en pendientes'); }}>Devolver a pendientes</button>}
-          <button className="danger" onClick={() => { if (confirm(`¿Quitar «${movie.title}» de su lista? Esto la quita para ambos.`)) guard(async () => { await repo.removeMovie(movie.id); go('/lista'); }, 'Película quitada'); }}>Quitar de la lista</button>
+          <button className="danger" onClick={() => { if (confirm(`¿Quitar ${movie.title} de la cartelera? Se va para los dos.`)) guard(async () => { await repo.removeMovie(movie.id); go('/lista'); }, 'Fuera de la cartelera'); }}>Quitar de la lista</button>
         </div>
       </Sheet>
     </div>
@@ -112,7 +112,7 @@ function WatchSheet({ open, onClose, onSave }: { open: boolean; onClose: () => v
       <div className="stack">
         <label className="field"><span>¿Cuándo la vieron?</span><input type="date" value={date} max={todayISO()} onChange={(e) => setDate(e.target.value)} required /></label>
         <div className="field"><span>¿Qué nota le das?</span><ScorePicker value={score} onChange={(n) => setScore(n === score ? null : n)} /></div>
-        <p className="small muted">{score ? `Tu nota: ${score} de 10. La otra persona califica desde su cuenta.` : 'Puedes calificar ahora o después.'}</p>
+        <p className="small muted">{score ? `Tu nota: ${score} de 10. La otra persona pone la suya desde su cuenta.` : 'Puedes calificar ahora o después.'}</p>
         <button className="btn primary wide" disabled={!date} onClick={() => onSave(date, score)}>Guardar función</button>
       </div>
     </Sheet>

@@ -28,16 +28,16 @@ export function Search() {
   }, [q]);
 
   const add = async (r: TmdbResult) => {
-    if (!online) { toast('Necesitas conexión para agregar.'); return; }
+    if (!online) { toast('Sin conexión no se puede agregar.'); return; }
     setBusyId(r.tmdbId);
     try {
       const runtimeMinutes = await movieRuntime(r.tmdbId);
       const res = await repo.addMovie({ ...r, runtimeMinutes, source: 'tmdb' }, user!.uid);
       if (res.status === 'exists') {
         const m = existing.get(r.tmdbId);
-        toast(m ? `Ya está en ${m.status === 'watched' ? '«Ya vimos»' : 'su lista'}. La agregó ${members[m.addedByUid]?.displayName ?? '—'}.` : 'Ya está en su lista.');
-      } else toast(`«${r.title}» agregada a su lista`);
-    } catch { toast('No se pudo agregar. Revisa tu conexión.'); }
+        toast(m ? `Esa ya estaba en ${m.status === 'watched' ? 'las vistas' : 'la cartelera'}. La puso ${members[m.addedByUid]?.displayName ?? '—'}.` : 'Esa ya estaba en la cartelera.');
+      } else toast(`${r.title} entra a la cartelera`);
+    } catch { toast('No entró. Revisa tu conexión y vuelve a intentarlo.'); }
     finally { setBusyId(null); }
   };
 
@@ -49,7 +49,7 @@ export function Search() {
         <input ref={inputRef} type="search" placeholder={tmdbEnabled ? 'Busca una película…' : 'El catálogo no está conectado'} value={q} onChange={(e) => setQ(e.target.value)} disabled={!tmdbEnabled} aria-label="Buscar película" enterKeyHint="search" />
       </label>
 
-      {!tmdbEnabled && <p className="note">El buscador de TMDB aún no está configurado. Puedes agregar películas a mano mientras tanto.</p>}
+      {!tmdbEnabled && <p className="note">El catálogo no está conectado. Mientras tanto pueden agregarlas a mano.</p>}
       {state === 'error' && <p className="error" role="alert">El catálogo no respondió. Intenta otra vez o agrégala a mano.</p>}
       {state === 'loading' && results.length === 0 && <ul className="results">{[0, 1, 2].map((i) => <li key={i} className="result skel-row" />)}</ul>}
       {state === 'done' && results.length === 0 && <p className="muted">No encontramos «{q}». Revisa la ortografía o agrégala a mano.</p>}
@@ -89,12 +89,12 @@ function ManualSheet({ open, onClose, initial }: { open: boolean; onClose: () =>
   useEffect(() => { if (open) { setTitle(initial); setYear(''); } }, [open, initial]);
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!online) { toast('Necesitas conexión para agregar.'); return; }
+    if (!online) { toast('Sin conexión no se puede agregar.'); return; }
     const y = Number(year);
     try {
       await repo.addMovie({ tmdbId: null, title: title.trim().slice(0, 200), originalTitle: null, releaseYear: y >= 1888 && y <= 2100 ? y : null, posterPath: null, backdropPath: null, overview: null, runtimeMinutes: null, source: 'manual' }, user!.uid);
-      toast(`«${title.trim()}» agregada a su lista`); onClose();
-    } catch { toast('No se pudo agregar. Revisa tu conexión.'); }
+      toast(`${title.trim()} entra a la cartelera`); onClose();
+    } catch { toast('No entró. Revisa tu conexión y vuelve a intentarlo.'); }
   };
   return (
     <Sheet open={open} onClose={onClose} title="Agregar a mano">

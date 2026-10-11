@@ -36,8 +36,7 @@ export function Home() {
           <div className="hero-body">
             <Poster movie={hero} size="w342" className="hero-poster" />
             <div className="hero-text">
-              <h1 className="serif hero-q">¿Qué vemos después?</h1>
-              <p className="hero-title">{hero.title}{hero.releaseYear ? <span className="muted"> ({hero.releaseYear})</span> : null}</p>
+              <h1 className="hero-title">{hero.title}{hero.releaseYear ? <span className="muted"> ({hero.releaseYear})</span> : null}</h1>
               <p className="muted small">La propuso {members[hero.addedByUid]?.displayName ?? '—'}</p>
               <button className="btn primary" onClick={() => go(`/peli/${hero.id}`)}>Ver ficha</button>
             </div>
@@ -45,8 +44,8 @@ export function Home() {
         </section>
       ) : (
         <section className="empty-hero">
-          <h1 className="serif hero-q">La sala está vacía</h1>
-          <p className="muted">Todavía no hay nada en su cartelera. Busquen la primera película que quieran ver juntos.</p>
+          <h1 className="serif empty-hero-t">La sala está vacía</h1>
+          <p className="muted">Todavía no hay nada en la cartelera. Busquen la primera que quieran ver juntos.</p>
           <button className="btn primary" onClick={() => go('/buscar')}>Agregar la primera</button>
         </section>
       )}

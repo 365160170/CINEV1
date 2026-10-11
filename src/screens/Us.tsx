@@ -46,14 +46,14 @@ export function Us() {
         <button className="setting" onClick={() => repo.signOut()}><span>Cerrar sesión</span></button>
         <details className="help">
           <summary>Ayuda</summary>
-          <p className="small muted">Busca una película y tócala para agregarla. Cuando la vean, ábrela y toca «Marcar como vista». Cada quien pone su propia nota desde su cuenta.</p>
+          <p className="small muted">Busca una película y tócala para ponerla en la cartelera. Cuando la vean, ábrela y marca que ya la vieron. Cada quien pone su nota desde su propia cuenta.</p>
         </details>
         {tmdbEnabled && <p className="credit">Datos e imágenes de películas: TMDB. Este producto usa la API de TMDB pero no está avalado ni certificado por TMDB.</p>}
       </section>
 
       <Sheet open={edit} onClose={() => setEdit(false)} title="Mi perfil"><ProfileForm onDone={() => setEdit(false)} /></Sheet>
       <Sheet open={rename} onClose={() => setRename(false)} title="Nombre del cine">
-        <form className="stack" onSubmit={async (e) => { e.preventDefault(); try { await repo.renameSpace(name.trim().slice(0, 40)); toast('Nombre actualizado'); setRename(false); } catch { toast('No se guardó.'); } }}>
+        <form className="stack" onSubmit={async (e) => { e.preventDefault(); try { await repo.renameSpace(name.trim().slice(0, 40)); toast('Así se llama su cine ahora'); setRename(false); } catch { toast('No se guardó. Inténtalo otra vez.'); } }}>
           <input value={name} maxLength={40} required onChange={(e) => setName(e.target.value)} aria-label="Nombre del cine" />
           <p className="small muted">Ambas personas pueden cambiarlo.</p>
           <button className="btn primary wide" disabled={!name.trim()}>Guardar nombre</button>
