@@ -33,17 +33,24 @@ export function Avatar({ member, size = 32 }: { member: Member | null; size?: nu
 
 export function Sheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  // onClose cambia de identidad en cada render del padre. Si el efecto
+  // dependiera de él se repetiría con cada tecla, y el foco volvería a saltar.
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     if (!open) return;
-    const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') closeRef.current(); };
     addEventListener('keydown', k);
-    ref.current?.querySelector<HTMLElement>('button, input')?.focus();
+    // Enfocar el primer CAMPO, nunca el botón de cerrar: con el foco en la X,
+    // el primer espacio que se escriba cierra la hoja.
+    const field = ref.current?.querySelector<HTMLElement>('input, select, textarea');
+    (field ?? ref.current)?.focus();
     return () => removeEventListener('keydown', k);
-  }, [open, onClose]);
+  }, [open]);
   if (!open) return null;
   return (
     <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} ref={ref} onClick={(e) => e.stopPropagation()}>
+      <div className="sheet" role="dialog" aria-modal="true" aria-label={title} ref={ref} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
           <h2 className="serif">{title}</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Cerrar"><X size={20} strokeWidth={1.6} /></button>

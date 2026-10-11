@@ -11,3 +11,9 @@ export function formatDay(iso: string | null, opts: Intl.DateTimeFormatOptions =
 export const formatMs = (ms: number) => new Date(ms).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
 export const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '').join('') || '?';
 export function hashHue(s: string) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
+
+/** Días completos entre dos días de calendario «YYYY-MM-DD». */
+export function daysBetween(fromISO: string, toISO: string) {
+  const u = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+  return Math.round((u(toISO) - u(fromISO)) / 86400000);
+}

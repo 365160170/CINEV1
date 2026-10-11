@@ -3,6 +3,7 @@ import { go, useApp } from '../store';
 import { Avatar, Poster, RatingPair } from '../ui/components';
 import { img } from '../data/tmdb';
 import { useAmbient } from '../ui/ambient';
+import { Summary } from '../ui/Summary';
 import { formatDay } from '../util';
 
 export function Home() {
@@ -53,6 +54,8 @@ export function Home() {
       {(pending.length > 0 || watched.length > 0) && (
         <p className="band">{me?.displayName} y {other?.displayName ?? 'tu compañía'} tienen {pending.length} {pending.length === 1 ? 'película pendiente' : 'películas pendientes'}.</p>
       )}
+
+      <Summary />
 
       {pending.length > 1 && (
         <section>

@@ -247,9 +247,26 @@ input[type=date] { color-scheme: dark; }
 .fab { display: flex; align-items: center; gap: 10px; margin: 34px auto 10px; padding: 0 24px; min-height: 50px; border: 1px solid var(--borde-2); border-radius: 999px; background: var(--panel); font-weight: 600; font-size: 0.94rem; color: var(--ink); transition: background var(--t), transform var(--t) var(--bounce); }
 .fab:active { transform: scale(0.96); }
 
+/* ===== Resumen de la casa =====
+   Un número protagonista y una fila de indicadores. Sin ejes ni colores de
+   serie: el valor va en tinta y el acento se reserva para el protagonista. */
+.resumen { margin: 26px 0 4px; }
+.res-hero { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 20px 20px 18px; border: 1px solid var(--borde); border-radius: var(--r); background: var(--panel); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.res-n { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(3.4rem, 17vw, 4.6rem); line-height: 1; letter-spacing: -0.04em; color: var(--rosa); font-variant-numeric: tabular-nums; }
+.res-u { font-size: 0.42em; margin-left: 0.08em; color: var(--ink-2); }
+.res-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+@media (min-width: 560px) { .res-grid { grid-template-columns: repeat(3, 1fr); } }
+.tile { display: flex; flex-direction: column; gap: 2px; padding: 14px 15px; border: 1px solid var(--borde); border-radius: var(--r-sm); background: var(--panel); min-width: 0; }
+.tile-label { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
+.tile-value { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 1.5rem; line-height: 1.15; letter-spacing: -0.03em; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: break-word; hyphens: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tile-note { font-size: 0.76rem; color: var(--ink-2); }
+.res-hero .tile-note { margin-top: 4px; }
+
 /* Lista */
-.controls { display: flex; gap: 10px; margin: 14px 0 20px; }
-.controls select { width: auto; min-height: 44px; font-size: 1rem; padding: 0 12px; }
+/* Los dos filtros medían 365px dentro de 284: desbordaban la página entera
+   y de paso estiraban la barra flotante fuera de la pantalla. */
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 20px; }
+.controls select { flex: 1 1 150px; width: auto; min-width: 0; max-width: 100%; min-height: 44px; font-size: 1rem; padding: 0 12px; text-overflow: ellipsis; }
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 14px; }
 @media (min-width: 420px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 700px) { .grid { grid-template-columns: repeat(4, 1fr); } }
