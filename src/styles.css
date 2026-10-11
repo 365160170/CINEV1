@@ -34,6 +34,9 @@
   --wonk: 'SOFT' 50, 'WONK' 1;
 
   --r: 20px; --r-sm: 14px; --r-xs: 10px;
+  /* Ritmo vertical: junto lo que va junto, amplio entre secciones. Antes
+     todas las separaciones caian entre 20 y 34px y nada pesaba mas. */
+  --sep-apretada: 10px; --sep-media: 18px; --sep-seccion: 52px;
   --t: 200ms; --ease: cubic-bezier(0.22,0.8,0.26,1); --bounce: cubic-bezier(0.22,1,0.36,1); /* ease-out-quint */
   --nav-h: 64px;
   --safe-b: env(safe-area-inset-bottom, 0px);
@@ -91,7 +94,7 @@ img { display: block; max-width: 100%; }
 
 /* Marca */
 .wordmark { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(2.2rem, 9vw, 2.9rem); line-height: 1.05; letter-spacing: -0.025em; }
-.wordmark.sm { font-size: 1.3rem; }
+.wordmark.sm { font-family: var(--sans); font-weight: 600; font-size: 0.82rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2); }
 .ticket-no { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em; color: var(--ink-2); }
 
 /* Shell */
@@ -206,7 +209,7 @@ input[type=date] { color-scheme: dark; }
 
 /* Inicio */
 .home-top { display: flex; align-items: center; justify-content: space-between; }
-.greeting { margin: 12px 0 20px; font-size: 1.04rem; }
+.greeting { margin: var(--sep-apretada) 0 var(--sep-media); font-size: 0.95rem; color: var(--ink-2); }
 .greeting .muted { color: var(--ink-2); }
 
 .hero { position: relative; border-radius: var(--r); overflow: hidden; background: var(--panel); border: 1px solid var(--borde); box-shadow: 0 18px 50px rgba(0,0,0,0.42); }
@@ -216,22 +219,25 @@ input[type=date] { color-scheme: dark; }
    queda libre. Medido: el texto conserva mas de 4.5:1 sobre el. */
 .hero-shade { position: absolute; inset: 0; background:
   linear-gradient(to top, rgba(13,10,18,0.97) 0%, rgba(13,10,18,0.93) 26%, rgba(13,10,18,0.58) 54%, rgba(13,10,18,0.14) 80%, rgba(13,10,18,0) 100%); }
-.hero-body { position: relative; display: flex; gap: 20px; align-items: flex-end; padding: 22px 20px; }
+.hero-body { position: relative; display: flex; gap: 18px; align-items: flex-end; padding: 24px 20px 22px; min-height: 310px; }
 @media (max-width: 379px) { .hero-poster { width: 84px; } .hero-body { gap: 14px; padding: 18px 15px; } .hero-text .btn { padding: 0 18px; } }
-.hero:has(.hero-bg) .hero-body { min-height: 300px; }
+.hero:has(.hero-bg) .hero-body { min-height: 380px; }
 .hero-poster { width: 116px; flex-shrink: 0; box-shadow: 0 22px 44px -14px hsl(var(--phue, 318) 88% 52% / 0.6), 0 10px 26px rgba(0,0,0,0.6); }
-.hero-text { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0; }
-.hero-title { margin: 0; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.45rem, 6.6vw, 2.1rem); line-height: 1.08; letter-spacing: -0.03em; overflow-wrap: break-word; text-wrap: balance; }
+.hero-text { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; }
+.hero-title { margin: 0; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(2rem, 9.2vw, 3.3rem); line-height: 1.04; letter-spacing: -0.04em; overflow-wrap: break-word; text-wrap: balance; }
 .hero-title .muted { font-family: var(--sans); font-weight: 400; font-size: 0.9rem; }
 .hero-text .btn { margin-top: 12px; }
-@media (min-width: 700px) { .hero-poster { width: 172px; } .hero-body { padding: 32px; } .hero:has(.hero-bg) .hero-body { min-height: 380px; } .hero-title { font-size: 2.7rem; } }
+/* Con fondo, el póster del destacado sobra en el teléfono: ya hay una
+   imagen de la misma película y le robaba el ancho al título. */
+@media (max-width: 699px) { .hero:has(.hero-bg) .hero-poster { display: none; } }
+@media (min-width: 700px) { .hero-poster { width: 190px; } .hero-body { padding: 36px; min-height: 420px; } .hero:has(.hero-bg) .hero-body { min-height: 460px; } }
 .empty-hero { padding: 36px 22px; border: 1px solid var(--borde); border-radius: var(--r); background: var(--panel); }
 .empty-hero p { max-width: 38ch; color: var(--ink-2); }
 .empty-hero-t { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.9rem, 8vw, 2.3rem); line-height: 1.06; letter-spacing: -0.03em; color: var(--ink); margin: 0 0 8px; }
-.band { color: var(--ink-2); margin: 22px 0 6px; font-size: 0.94rem; }
+.band { color: var(--ink-2); margin: var(--sep-media) 0 0; font-size: 0.88rem; }
 
-.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 30px 0 14px; }
-.sec-head h2 { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.35rem, 5.6vw, 1.6rem); letter-spacing: -0.025em; margin: 0; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: var(--sep-seccion) 0 var(--sep-apretada); }
+.sec-head h2 { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 1.12rem; letter-spacing: -0.02em; margin: 0; }
 .sec-head .link { font-size: 0.86rem; }
 
 .lane { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 18px; margin: 0 -18px; padding: 4px 18px 12px; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
@@ -245,16 +251,18 @@ input[type=date] { color-scheme: dark; }
 .ticket { display: flex; width: 100%; text-align: left; background: var(--papel); color: var(--tinta); border-radius: var(--r-sm); overflow: hidden; position: relative; box-shadow: 0 14px 38px rgba(0,0,0,0.45); transition: transform var(--t) var(--ease); }
 .ticket:active { transform: scale(0.985); }
 .ticket-main { position: relative; flex: 1; display: flex; flex-direction: column; gap: 11px; padding: 16px 18px; min-width: 0; }
+/* Deja libre la esquina del sello: antes el texto se le metia debajo. */
+.ticket-main .rating-pair { padding-right: 62px; }
 .ticket-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .ticket-brand { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rosa-prof); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ticket-serial { font-family: var(--mono); font-size: 0.72rem; color: var(--tinta-2); white-space: nowrap; }
 .ticket-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.ticket-title { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 1.5rem; line-height: 1.08; letter-spacing: -0.03em; color: var(--tinta); }
+.ticket-title { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 1.38rem; line-height: 1.08; letter-spacing: -0.03em; color: var(--tinta); }
 .ticket-meta { font-family: var(--mono); font-size: 0.76rem; color: var(--tinta-2); }
 /* Sello de tinta. Vive siempre en el boleto, porque la función ya ocurrió;
    lo que se anima es el golpe, y solo al registrarla. */
-.ticket-sello { position: absolute; right: 12px; bottom: 9px; padding: 3px 10px 4px; border: 2px solid var(--rosa-prof); border-radius: 4px;
-  font-size: 0.74rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rosa-prof);
+.ticket-sello { position: absolute; right: 10px; bottom: 9px; padding: 2px 7px 3px; border: 2px solid var(--rosa-prof); border-radius: 4px;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rosa-prof);
   opacity: 1; transform: rotate(-13deg); box-shadow: inset 0 0 0 1px rgba(253,244,231,0.9), inset 0 0 0 2.5px rgba(155,45,76,0.55); pointer-events: none; }
 .ticket-sello.is-sellando { animation: sellar 420ms cubic-bezier(.16,1,.3,1) both; }
 @keyframes sellar {
@@ -272,15 +280,15 @@ input[type=date] { color-scheme: dark; }
 .stub-big { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 2.5rem; line-height: 1.1; color: var(--rosa-prof); }
 .stub-date { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tinta-2); margin-top: 3px; }
 
-.rating-pair { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; font-size: 0.82rem; }
-.rp { display: inline-flex; align-items: center; gap: 6px; }
+.rating-pair { display: flex; gap: 6px 14px; flex-wrap: wrap; margin-top: 4px; font-size: 0.82rem; }
+.rp { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .rp i { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(34,22,34,0.18); }
 .rp-name { color: var(--tinta-2); }
 .rp b { font-weight: 700; color: var(--tinta); }
 .rp b.muted { font-weight: 400; color: var(--tinta-2); }
 .rp b.amber { color: var(--rosa-prof); }
 
-.fab { display: flex; align-items: center; gap: 10px; margin: 34px auto 10px; padding: 0 24px; min-height: 50px; border: 1px solid var(--borde-2); border-radius: 999px; background: var(--panel); font-weight: 600; font-size: 0.94rem; color: var(--ink); transition: background var(--t), transform var(--t) var(--bounce); }
+.fab { display: flex; align-items: center; gap: 10px; margin: var(--sep-seccion) auto 10px; padding: 0 24px; min-height: 50px; border: 1px solid var(--borde-2); border-radius: 999px; background: var(--panel); font-weight: 600; font-size: 0.94rem; color: var(--ink); transition: background var(--t), transform var(--t) var(--bounce); }
 .fab:active { transform: scale(0.96); }
 
 /* ===== Transicion entre pantallas =====
@@ -307,7 +315,7 @@ input[type=date] { color-scheme: dark; }
    El historial de la casa como cartelera de sala, no como tablero de
    métricas. Los foquitos se encienden una vez, de izquierda a derecha, y
    se quedan quietos: un solo momento con autoría, no efectos sueltos. */
-.marquee { position: relative; margin: 28px 0 6px; padding: 13px; border-radius: var(--r); background: linear-gradient(#17121E, #141019); border: 1px solid rgba(255,214,150,0.16); box-shadow: 0 16px 44px -18px rgba(0,0,0,0.9); }
+.marquee { position: relative; margin: var(--sep-seccion) 0 0; padding: 13px; border-radius: var(--r); background: linear-gradient(#17121E, #141019); border: 1px solid rgba(255,214,150,0.16); box-shadow: 0 16px 44px -18px rgba(0,0,0,0.9); }
 .marquee-bulbs { position: absolute; inset: 7px; pointer-events: none; border-radius: 14px;
   --b: radial-gradient(circle, #FFE2A8 1.7px, rgba(255,205,130,0.35) 2.6px, transparent 3.1px);
   background-image: var(--b), var(--b), var(--b), var(--b);
@@ -336,7 +344,7 @@ input[type=date] { color-scheme: dark; }
   to   { opacity: 1;    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 100%, transparent 100%); mask-image: linear-gradient(90deg, #000 0%, #000 100%, transparent 100%); }
 }
 .marquee-face { position: relative; padding: 18px 16px 16px; border-radius: 12px; background: rgba(0,0,0,0.26); border: 1px solid rgba(255,255,255,0.05); }
-.marquee-cartel { margin: 0; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.45rem, 6.4vw, 1.95rem); line-height: 1.1; letter-spacing: -0.03em; color: #FFE9C9; text-wrap: balance; }
+.marquee-cartel { margin: 0; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(1.3rem, 5.6vw, 1.65rem); line-height: 1.12; letter-spacing: -0.03em; color: #FFE9C9; text-wrap: balance; }
 .marquee-pie { margin: 7px 0 0; font-size: 0.8rem; color: var(--ink-2); }
 .marquee-lineas { margin: 15px 0 0; padding: 14px 0 0; border-top: 1px solid rgba(255,214,150,0.14); display: flex; flex-direction: column; gap: 9px; }
 .marquee-linea { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
