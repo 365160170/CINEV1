@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { ArrowLeft, MoreHorizontal, Play } from 'lucide-react';
 import { repo } from '../data';
 import { img, movieTrailer } from '../data/tmdb';
@@ -64,7 +64,7 @@ export function Detail({ id }: { id: string }) {
             </div>
             <div className="score-cards">
               {uids.map((u) => (
-                <div key={u} className="score-card" style={{ borderTopColor: members[u]?.accentColor }}>
+                <div key={u} className="score-card" style={{ '--who': members[u]?.accentColor } as CSSProperties}>
                   <span className="small muted">{members[u]?.displayName ?? 'Aún no entra'}</span>
                   <span className={`score-big ${scores[u] ? 'amber' : 'muted'}`}>{scores[u] ?? '–'}</span>
                   {u === user?.uid ? <button className="link" onClick={() => setSheet('rate')}>{scores[u] ? 'Cambiar mi nota' : 'Calificar'}</button> : <span className="small muted">{scores[u] ? 'de 10' : 'Sin calificar'}</span>}

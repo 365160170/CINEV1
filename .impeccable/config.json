@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/styles.css"
+        ],
+        "createdAt": "2026-10-11T01:09:52.119Z",
+        "reason": "No es una reticula decorativa: son las dos muescas del troquel del boleto (radial-gradient con no-repeat arriba y abajo)"
+      }
+    ]
+  }
+}
