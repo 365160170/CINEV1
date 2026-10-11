@@ -71,7 +71,7 @@ export function Denied({ kind }: { kind: 'denied' | 'error' }) {
   );
 }
 
-export const COLORS = ['#E64D42', '#E8BA6A', '#7FA88B', '#7E9CC9', '#C48BB0', '#D0D0C8'];
+export const COLORS = ['#E07A5F', '#E8BA6A', '#C4789B', '#7FA88B', '#7E9CC9', '#D0D0C8'];
 export const PRESETS = [{ id: 'round', label: 'Círculo' }, { id: 'ticket', label: 'Boleto' }, { id: 'frame', label: 'Cuadro' }];
 
 export function ProfileForm({ onDone, first }: { onDone?: () => void; first?: boolean }) {
