@@ -2,9 +2,10 @@ import { Plus } from 'lucide-react';
 import { go, useApp } from '../store';
 import { Avatar, Poster, RatingPair } from '../ui/components';
 import { img } from '../data/tmdb';
+import { useEffect, useState } from 'react';
 import { useAmbient } from '../ui/ambient';
 import { Summary } from '../ui/Summary';
-import { formatDay } from '../util';
+import { formatDay, tomarFuncionNueva } from '../util';
 
 export function Home() {
   const { me, other, movies, space, ratingsFor, members, load } = useApp();
@@ -17,6 +18,11 @@ export function Home() {
   const latestByOther = pending.find((m) => m.addedByUid === other?.uid && Date.now() - m.addedAt < 3 * 86400000);
 
   useAmbient(hero?.title, img(hero?.posterPath ?? null, 'w185'));
+
+  // El sello siempre está en el boleto, porque la función ya ocurrió; lo que
+  // se anima es el golpe, y solo cuando acaban de registrarla.
+  const [sellando, setSellando] = useState(false);
+  useEffect(() => { if (tomarFuncionNueva()) { setSellando(true); const t = setTimeout(() => setSellando(false), 1200); return () => clearTimeout(t); } }, []);
 
   return (
     <div className="page">
@@ -86,6 +92,7 @@ export function Home() {
                 </span>
                 <RatingPair scores={ratingsFor(last.id)} members={members} uids={space?.memberUids ?? []} />
               </span>
+              <span className={`ticket-sello ${sellando ? 'is-sellando' : ''}`} aria-hidden>Vista</span>
             </span>
             <span className="ticket-stub">
               <span className="stub-label">Admite</span>

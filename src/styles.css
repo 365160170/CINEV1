@@ -10,6 +10,8 @@
 /* El tono de la sala. Registrado para que transicione al cambiar de
    película en vez de saltar de golpe. */
 @property --hue { syntax: '<number>'; initial-value: 318; inherits: true; }
+/* El angulo del arco que recorre la marquesina al registrar una funcion. */
+@property --vuelta { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
 :root {
   --hue: 318;
@@ -76,7 +78,16 @@ img { display: block; max-width: 100%; }
 .muted { color: var(--ink-2); }
 .amber { color: var(--oro); }
 .small { font-size: 0.82rem; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+/* Movimiento reducido no es ausencia de respuesta: se van las entradas, los
+   bucles y los desplazamientos, y se quedan el color y la opacidad, que son
+   los que confirman que algo pasó. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 120ms !important; }
+  .intro *, .marquee-bulbs, .marquee-bulbs::after, .sheet, .toast, .skel, .ticket-sello { animation: none !important; }
+  .sheet, .toast { opacity: 1; transform: translateX(-50%); }
+  .toast { transform: translateX(-50%); }
+  .hero-bg, .backdrop img { filter: none; }
+}
 
 /* Marca */
 .wordmark { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(2.2rem, 9vw, 2.9rem); line-height: 1.05; letter-spacing: -0.025em; }
@@ -190,7 +201,7 @@ input[type=date] { color-scheme: dark; }
   background-image: linear-gradient(158deg, hsl(var(--phue, 318) 64% 42%) 0%, hsl(calc(var(--phue, 318) + 38) 58% 24%) 62%, hsl(calc(var(--phue, 318) + 52) 50% 15%) 100%); }
 .poster-type::before { content: ''; position: absolute; inset: 0; background: linear-gradient(150deg, rgba(255,255,255,0.18), transparent 44%, rgba(0,0,0,0.30)); pointer-events: none; }
 .pt-rule { position: relative; width: 26%; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.75); margin-bottom: auto; }
-.pt-title { position: relative; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(0.68rem, 12.5cqi, 1.8rem); line-height: 1.08; letter-spacing: -0.02em; color: var(--ink); overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 2px 14px rgba(0,0,0,0.45); }
+.pt-title { position: relative; font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: clamp(0.62rem, 11cqi, 1.7rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--ink); overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 2px 14px rgba(0,0,0,0.45); }
 .pt-year { position: relative; font-family: var(--mono); font-size: clamp(0.52rem, 6cqi, 0.78rem); color: rgba(255,255,255,0.78); }
 
 /* Inicio */
@@ -230,13 +241,23 @@ input[type=date] { color-scheme: dark; }
 /* ===== El boleto ===== */
 .ticket { display: flex; width: 100%; text-align: left; background: var(--papel); color: var(--tinta); border-radius: var(--r-sm); overflow: hidden; position: relative; box-shadow: 0 14px 38px rgba(0,0,0,0.45); transition: transform var(--t) var(--ease); }
 .ticket:active { transform: scale(0.985); }
-.ticket-main { flex: 1; display: flex; flex-direction: column; gap: 11px; padding: 16px 18px; min-width: 0; }
+.ticket-main { position: relative; flex: 1; display: flex; flex-direction: column; gap: 11px; padding: 16px 18px; min-width: 0; }
 .ticket-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .ticket-brand { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rosa-prof); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ticket-serial { font-family: var(--mono); font-size: 0.72rem; color: var(--tinta-2); white-space: nowrap; }
 .ticket-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .ticket-title { font-family: var(--display); font-weight: 600; font-variation-settings: var(--wonk); font-size: 1.5rem; line-height: 1.08; letter-spacing: -0.03em; color: var(--tinta); }
 .ticket-meta { font-family: var(--mono); font-size: 0.76rem; color: var(--tinta-2); }
+/* Sello de tinta. Vive siempre en el boleto, porque la función ya ocurrió;
+   lo que se anima es el golpe, y solo al registrarla. */
+.ticket-sello { position: absolute; right: 12px; bottom: 9px; padding: 3px 10px 4px; border: 2px solid var(--rosa-prof); border-radius: 4px;
+  font-size: 0.74rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rosa-prof);
+  opacity: 1; transform: rotate(-13deg); box-shadow: inset 0 0 0 1px rgba(253,244,231,0.9), inset 0 0 0 2.5px rgba(155,45,76,0.55); pointer-events: none; }
+.ticket-sello.is-sellando { animation: sellar 420ms cubic-bezier(.16,1,.3,1) both; }
+@keyframes sellar {
+  from { opacity: 0; transform: rotate(-34deg) scale(2.7); }
+  to   { opacity: 1; transform: rotate(-13deg) scale(1); }
+}
 
 .ticket-stub { position: relative; flex-shrink: 0; width: 92px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 16px 8px; background: var(--papel-2); }
 .ticket-stub::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; border-left: 2px dashed rgba(34,22,34,0.26); }
@@ -273,6 +294,19 @@ input[type=date] { color-scheme: dark; }
   filter: drop-shadow(0 0 4px rgba(255,198,120,0.5));
   -webkit-mask-image: linear-gradient(90deg, #000 0 0); mask-image: linear-gradient(90deg, #000 0 0);
   animation: bulbs-on 1100ms cubic-bezier(.16,1,.3,1) both; }
+/* Capa de focos encendidos a tope, revelada por un arco que gira. En reposo
+   es invisible y no anima: la marquesina solo corre cuando hay qué celebrar. */
+.marquee-bulbs::after { content: ''; position: absolute; inset: 0; opacity: 0;
+  --b2: radial-gradient(circle, #FFF6E2 2.1px, rgba(255,226,170,0.85) 3px, transparent 3.6px);
+  background-image: var(--b2), var(--b2), var(--b2), var(--b2);
+  background-size: 19px 7px, 19px 7px, 7px 19px, 7px 19px;
+  background-position: top left, bottom left, left top, right top;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  filter: drop-shadow(0 0 7px rgba(255,208,130,0.95));
+  -webkit-mask-image: conic-gradient(from var(--vuelta), #000 0deg, #000 24deg, transparent 54deg);
+  mask-image: conic-gradient(from var(--vuelta), #000 0deg, #000 24deg, transparent 54deg); }
+.marquee.is-corriendo .marquee-bulbs::after { animation: vuelta 1050ms linear 3; }
+@keyframes vuelta { from { --vuelta: 0deg; opacity: 1; } 99% { opacity: 1; } to { --vuelta: 360deg; opacity: 0; } }
 /* Encendido: el haz recorre el marco una vez y se apaga el recorte. */
 @keyframes bulbs-on {
   from { opacity: 0.25; -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 2%, transparent 14%); mask-image: linear-gradient(90deg, #000 0%, #000 2%, transparent 14%); }

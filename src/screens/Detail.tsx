@@ -5,7 +5,7 @@ import { img, movieTrailer } from '../data/tmdb';
 import { go, useApp } from '../store';
 import { Avatar, Poster, ScorePicker, Sheet } from '../ui/components';
 import { useAmbient } from '../ui/ambient';
-import { formatDay, formatMs, todayISO } from '../util';
+import { formatDay, formatMs, marcarFuncionNueva, todayISO } from '../util';
 
 export function Detail({ id }: { id: string }) {
   const { movies, members, user, space, ratingsFor, toast, load, online } = useApp();
@@ -78,6 +78,7 @@ export function Detail({ id }: { id: string }) {
       <WatchSheet open={sheet === 'watch'} onClose={() => setSheet(null)} onSave={(date, score) => guard(async () => {
         await repo.markWatched(movie.id, date, user!.uid);
         if (score) await repo.setRating(movie.id, user!.uid, score);
+        marcarFuncionNueva();
       }, 'Una más para nuestra historia')} />
 
       <Sheet open={sheet === 'date'} onClose={() => setSheet(null)} title="¿Cuándo la vieron?">

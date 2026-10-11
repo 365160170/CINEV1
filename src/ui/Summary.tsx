@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useApp } from '../store';
-import { daysBetween, todayISO } from '../util';
+import { daysBetween, todayISO, tomarFuncionNueva } from '../util';
 
 // LA MARQUESINA
 // El historial de la casa no se presenta como tablero de métricas (número
@@ -11,6 +12,15 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 
 export function Summary() {
   const { movies, ratings, members, space } = useApp();
+  // Las luces corren una vuelta cuando acaban de registrar una función, y
+  // solo entonces: en reposo la marquesina está quieta.
+  const [corriendo, setCorriendo] = useState(false);
+  useEffect(() => {
+    if (!tomarFuncionNueva()) return;
+    setCorriendo(true);
+    const t = setTimeout(() => setCorriendo(false), 3200);
+    return () => clearTimeout(t);
+  }, []);
   const uids = space?.memberUids ?? [];
   const watched = movies.filter((m) => m.status === 'watched');
   if (!watched.length) return null;
@@ -59,7 +69,7 @@ export function Summary() {
     : `${watched.length} ${watched.length === 1 ? 'función' : 'funciones'} · ${minutos} min juntos`;
 
   return (
-    <section className="marquee" aria-label="Nuestra marquesina">
+    <section className={`marquee ${corriendo ? 'is-corriendo' : ''}`} aria-label="Nuestra marquesina">
       <span className="marquee-bulbs" aria-hidden />
       <div className="marquee-face">
         <p className="marquee-cartel">{cartel}</p>
